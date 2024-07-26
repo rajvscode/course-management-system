@@ -1,0 +1,1 @@
+INSERT INTO assignments (courseid, description) VALUES (22,'Physics');

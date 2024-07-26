@@ -1,0 +1,1 @@
+INSERT INTO enrollments (courseid, studentid) VALUES (22,1);

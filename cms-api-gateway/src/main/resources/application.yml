@@ -18,10 +18,10 @@ spring:
           uri: 'lb://courseservice'
           predicates:
             - Path=/courses/**
-        - id: enrolmentservice
-          uri: 'lb://enrolment-service'
+        - id: enrollmentservice
+          uri: 'lb://enrollment-service'
           predicates:
-            - Path=/enrolments/**
+            - Path=/enrollments/**
         - id: assignmentservice
           uri: 'lb://assignment-service'
           predicates:

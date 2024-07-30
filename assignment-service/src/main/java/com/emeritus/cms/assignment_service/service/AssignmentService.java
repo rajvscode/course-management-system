@@ -12,12 +12,25 @@ import com.emeritus.cms.assignment_service.repository.AssignmentRepository;
 public class AssignmentService {
 
     @Autowired
-    AssignmentRepository assignmentRepository;
+    private AssignmentRepository assignmentRepository;
 
-    public Assignment addAssignment(Assignment assignment){
+    public Assignment createAssignment(Assignment assignment) {
         return assignmentRepository.save(assignment);
     }
-    public List<Assignment> getAllAssignments(){
-        return assignmentRepository.findAll();
+
+    public Assignment getAssignment(Long id) {
+        return assignmentRepository.findById(id).orElse(null);
+    }
+
+    public List<Assignment> getAssignmentsByCourse(Long courseId) {
+        return assignmentRepository.findByCourseId(courseId);
+    }
+
+    public void deleteAssignment(Long id) {
+        assignmentRepository.deleteById(id);
+    }
+
+    public Assignment updateAssignment(Assignment assignment) {
+        return assignmentRepository.save(assignment);
     }
 }

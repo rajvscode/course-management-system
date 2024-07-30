@@ -1,41 +1,61 @@
 package com.emeritus.cms.userservice.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.emeritus.cms.userservice.model.User;
 import com.emeritus.cms.userservice.repository.UserRepository;
-import com.emeritus.cms.userservice.security.EmeritusUserDetails;
 
 @Service
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-     @Autowired
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-    public User saveUser(User user) { 
+    public User createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    public List<User> findAllUsers(){
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User findUserById(Long id) {
-        return userRepository.findById(id)
-        .orElseThrow(() -> new UsernameNotFoundException("No user found with Id :" + id));
+    public String getUserRoles(String username) {
+        Optional<User> byUsername = userRepository.findByUsername(username);
+        byUsername.orElse(null);
+        User user = byUsername.get();
+        return user.getRoles();
     }
 
-    // Other service methods
+    public List<User> getAllStudents() {
+        return userRepository.findByRolesContaining("STUDENT");
+    }
+
+    public List<User> getAllInstructors() {
+        return userRepository.findByRolesContaining("INSTRUCTOR");
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
 }

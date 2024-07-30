@@ -1,1 +1,1 @@
-INSERT INTO courses (name, description, instructorId) VALUES ('Rajesh', 'LKG', 22);
+INSERT INTO courses (name, description, instructor_id) VALUES ('Rajesh', 'LKG', 22);

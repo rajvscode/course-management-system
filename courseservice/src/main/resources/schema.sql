@@ -2,6 +2,6 @@ CREATE TABLE courses (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     description VARCHAR(255) NOT NULL,
-    instructorId BIGINT
+    instructor_id BIGINT NOT NULL
 );
 

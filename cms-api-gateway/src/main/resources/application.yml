@@ -1,36 +1,44 @@
 server:
-  port: 8085
+  port: 8080
 eureka:
   client:
     service-url:
       defaultZone: 'http://localhost:8761/eureka/'
 spring:
   application:
-    name: api-gateway
+    name: CMS-API-GATEWAY
   cloud:
     gateway:
       routes:
-        - id: userservice
-          uri: 'lb://userservice'
+        - id: USER-SERVICE
+          uri: 'lb://USER-SERVICE'
           predicates:
             - Path=/users/**
-        - id: courseservice
-          uri: 'lb://courseservice'
+          filters:
+            - AuthenticationFilter
+        - id: COURSE-SERVICE
+          uri: 'lb://COURSE-SERVICE'
           predicates:
             - Path=/courses/**
-        - id: enrollmentservice
-          uri: 'lb://enrollment-service'
+          filters:
+            - AuthenticationFilter
+        - id: ENROLLMENT-SERVICE
+          uri: 'lb://ENROLLMENT-SERVICE'
           predicates:
             - Path=/enrollments/**
-        - id: assignmentservice
-          uri: 'lb://assignment-service'
+          filters:
+            - AuthenticationFilter
+        - id: ASSIGNMENT-SERVICE
+          uri: 'lb://ASSIGNMENT-SERVICE'
           predicates:
             - Path=/assignments/**
-  security:
-    oAuth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://auth-service:8080/auth/realms/myrealm
+          filters:
+            - AuthenticationFilter
+  # security:
+  #   oAuth2:
+  #     resourceserver:
+  #       jwt:
+  #         issuer-uri: http://auth-service:8080/auth/realms/myrealm
 # management:
 #   endpoints:
 #     web:

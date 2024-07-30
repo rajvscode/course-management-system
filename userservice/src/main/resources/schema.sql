@@ -4,4 +4,3 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     roles VARCHAR(255) NOT NULL
 );
-

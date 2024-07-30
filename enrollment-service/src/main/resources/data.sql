@@ -1,1 +1,1 @@
-INSERT INTO enrollments (courseid, studentid) VALUES (22,1);
+INSERT INTO enrollments (course_id, student_id) VALUES (22,1);

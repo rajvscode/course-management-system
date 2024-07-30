@@ -12,13 +12,29 @@ import com.emeritus.cms.courseservice.repository.CourseRepository;
 public class CourseService {
 
     @Autowired
-    CourseRepository courseRepository;
+    private CourseRepository courseRepository;
 
-    public Course registerCourse(Course course) {
+    public Course createCourse(Course course) {
         return courseRepository.save(course);
     }
 
-    public List<Course> findAllCourses() {
+    public Course getCourse(Long id) {
+        return courseRepository.findById(id).orElse(null);
+    }
+
+    public List<Course> getAllCourses() {
         return courseRepository.findAll();
+    }
+
+    public List<Course> getCoursesByCreator(Long instructorId) {
+        return courseRepository.findByInstructorId(instructorId);
+    }
+
+    public void deleteCourse(Long id) {
+        courseRepository.deleteById(id);
+    }
+
+    public Course updateCourse(Course course) {
+        return courseRepository.save(course);
     }
 }

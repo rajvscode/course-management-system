@@ -19,12 +19,6 @@ public class EmeritusUserDetailsService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        // User user = userRepository.findByUsername(username)
-        // .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        // return new EmeritusUserDetails(user);
-
         Optional<User> userInfo = userRepository.findByUsername(username);
         return userInfo.map(EmeritusUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("user not found " + username));

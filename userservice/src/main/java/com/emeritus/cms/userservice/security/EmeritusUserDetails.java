@@ -13,16 +13,14 @@ import com.emeritus.cms.userservice.model.User;
 
 public class EmeritusUserDetails implements UserDetails {
 
-    // private final User user;
-
     private String userName;
     private String password;
     private List<GrantedAuthority> authorities;
 
     public EmeritusUserDetails(User user) {
-        userName=user.getUsername();
-        password=user.getPassword();
-        authorities= Arrays.stream(user.getRoles().split(","))
+        userName = user.getUsername();
+        password = user.getPassword();
+        authorities = Arrays.stream(user.getRoles().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
@@ -42,5 +40,4 @@ public class EmeritusUserDetails implements UserDetails {
     public String getUsername() {
         return userName;
     }
-
 }

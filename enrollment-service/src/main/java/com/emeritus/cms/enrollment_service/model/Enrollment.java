@@ -6,8 +6,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
+@ToString
 @Table(name = "enrollments")
 public class Enrollment {
 
@@ -15,36 +25,10 @@ public class Enrollment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long courseid;
+    @Column(name = "course_id", nullable = false)
+    private Long courseId;
 
-    @Column(nullable = false)
-    private Long studentid;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getCourseid() {
-        return courseid;
-    }
-
-    public void setCourseid(Long courseId) {
-        this.courseid = courseId;
-    }
-
-    public Long getStudentid() {
-        return studentid;
-    }
-
-    public void setStudentid(Long studentId) {
-        this.studentid = studentId;
-    }
-
-    
+    @Column(name = "student_id", nullable = false)
+    private Long studentId;
 
 }

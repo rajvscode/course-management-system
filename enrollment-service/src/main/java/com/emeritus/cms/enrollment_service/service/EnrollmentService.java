@@ -12,14 +12,22 @@ import com.emeritus.cms.enrollment_service.repository.EnrollmentRepository;
 public class EnrollmentService {
 
     @Autowired
-    EnrollmentRepository enrollmentRepository;
+    private EnrollmentRepository enrollmentRepository;
 
-    public Enrollment register( Enrollment enrollment){
+    public Enrollment enrollStudent(Enrollment enrollment) {
         return enrollmentRepository.save(enrollment);
     }
 
-    public List<Enrollment> getAllEnrollments(){
-        return enrollmentRepository.findAll();
+    public List<Enrollment> getEnrollmentsByStudent(Long studentId) {
+        return enrollmentRepository.findByStudentId(studentId);
+    }
+
+    public List<Enrollment> getEnrollmentsByCourse(Long courseId) {
+        return enrollmentRepository.findByCourseId(courseId);
+    }
+
+    public void deleteEnrollment(Long id) {
+        enrollmentRepository.deleteById(id);
     }
 
 }

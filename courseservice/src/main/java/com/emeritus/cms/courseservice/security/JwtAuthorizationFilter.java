@@ -1,23 +1,16 @@
 package com.emeritus.cms.courseservice.security;
 
 import java.io.IOException;
-import java.security.Key;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import com.emeritus.cms.courseservice.util.JwtUtil;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,9 +31,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             try {
                 JwtUtil jwtUtil = new JwtUtil();
                 String userName = jwtUtil.extractUserName(token);
+                Long userId = jwtUtil.getUserIdFromToken(token);
                 Collection<GrantedAuthority> authorities = jwtUtil.getAuthorities(token);
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userName, null, authorities);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userName, userId, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();

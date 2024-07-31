@@ -6,23 +6,29 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtService {
-
+    
+    // @Value("${jwt.secret}")
     public static final String SECRET = "997D98819223A2CCD32F08DD6C983B27DF1C92E08B8125C0C9AA70A32D42D38E";
 
     private final long jwtExpirationInMs = 86400000; // 24 hours
 
-    public String extractUsername(String token) {
+    public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -49,7 +55,7 @@ public class JwtService {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
+        final String username = extractUserName(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
@@ -79,5 +85,20 @@ public class JwtService {
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public Long getUserIdFromToken(String token) {
+        final Claims claims = extractAllClaims(token);
+        String userId = claims.get("userId", String.class);
+        return Long.parseLong(userId);
+    }
+    public Collection<GrantedAuthority> getAuthorities(String token) {
+
+        final Claims claims = extractAllClaims(token);
+        String roles = claims.get("roles", String.class);
+        Collection<GrantedAuthority> authorities = Arrays.stream(roles.split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        return authorities;
     }
 }

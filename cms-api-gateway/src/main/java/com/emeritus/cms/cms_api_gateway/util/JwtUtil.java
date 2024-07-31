@@ -16,11 +16,6 @@ public class JwtUtil {
         Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
     }
 
-    // public Boolean validateToken(String token, UserDetails userDetails) {
-    //     final String username = extractUsername(token);
-    //     return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    // }
-
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);

@@ -37,13 +37,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 try {
-//                    //REST call to AUTH service
-//                    template.getForObject("http://IDENTITY-SERVICE//validate?token" + authHeader, String.class);
                     jwtUtil.validateToken(authHeader);
 
                     // serverHttpRequest = exchange.getRequest()
                     // .mutate()
-                    // .header("loggedInUser", jwtUtil.extractUsername(authHeader))
+                    // .header("userId", jwtUtil.extractuserId(authHeader))
                     // .build();
 
                 } catch (Exception e) {
@@ -52,7 +50,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
             }
             return chain.filter(exchange);
-            // return chain.filter(exchange.mutate().request(serverHttpRequest).build());
         });
     }
 

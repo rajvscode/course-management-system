@@ -1,6 +1,7 @@
 package com.emeritus.cms.courseservice.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,19 +19,19 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public Course getCourse(Long id) {
-        return courseRepository.findById(id).orElse(null);
+    public Optional<Course> findCourseById(Long id) {
+        return courseRepository.findById(id);
     }
 
-    public List<Course> getAllCourses() {
+    public List<Course> findAllCourses() {
         return courseRepository.findAll();
     }
 
-    public List<Course> getCoursesByCreator(Long instructorId) {
+    public List<Course> findCoursesByCreator(Long instructorId) {
         return courseRepository.findByInstructorId(instructorId);
     }
 
-    public void deleteCourse(Long id) {
+    public void deleteCourseById(Long id) {
         courseRepository.deleteById(id);
     }
 

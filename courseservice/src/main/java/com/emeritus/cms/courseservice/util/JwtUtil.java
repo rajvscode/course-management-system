@@ -1,4 +1,4 @@
-package com.emeritus.cms.courseservice.security;
+package com.emeritus.cms.courseservice.util;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -60,19 +59,9 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String getUserIdFromToken(String token) {
+    public Long getUserIdFromToken(String token) {
         final Claims claims = extractAllClaims(token);
         String userId = claims.get("userId", String.class);
-        return userId;
-    }
-
-    public String getUserIdFromAuthHeader(String authorizationHeader) {
-
-        String userId = "";
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
-            userId = getUserIdFromToken(token);
-        }
-        return userId;
+        return Long.parseLong(userId);
     }
 }

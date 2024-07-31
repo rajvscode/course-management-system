@@ -1,20 +1,16 @@
 package com.emeritus.cms.userservice.controller;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,60 +39,91 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @GetMapping("/{id}")
+    // Register a new user
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        if (userService.findUserByUsername(user.getUsername()).isPresent()) {
+            return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
+        }
+        User createdUser = userService.registerUser(user);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    // Update user details
+    @PutMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public User getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    public ResponseEntity<?> updateUser(@RequestBody User userDetails) {
+        Optional<User> userOpt = userService.findUserById(userDetails.getId());
+        if (!userOpt.isPresent()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        User user = userOpt.get();
+        user.setUsername(userDetails.getUsername());
+        if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
+            user.setPassword(userService.encode(userDetails.getPassword())); // Update password if
+                                                                                               // provided
+        }
+        user.setRoles(userDetails.getRoles());
+        User updatedUser = userService.updateUser(user);
+
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    // Get all instructors
+    @GetMapping("/instructors")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> getAllInstructors() {
+        List<User> instructors = userService.findAllInstructors();
+        return new ResponseEntity<>(instructors, HttpStatus.OK);
+    }
+
+    // Get all students
+    @GetMapping("/students")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> getAllStudents() {
+        List<User> students = userService.findAllStudents();
+        return new ResponseEntity<>(students, HttpStatus.OK);
+    }
+
+    // Get all users
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_INSTRUCTOR') or hasAuthority('ROLE_STUDENT')")
+    public ResponseEntity<?> getAllUsers() {
+        List<User> users = userService.findAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-    }
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
 
-    @PutMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public User updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
-    }
+        Optional<User> userOpt = userService.findUserById(id);
+        if (!userOpt.isPresent()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
 
-    @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @GetMapping("/students")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public List<User> getAllStudents() {
-        return userService.getAllStudents();
-    }
-
-    @GetMapping("/instructors")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public List<User> getAllInstructors() {
-        return userService.getAllInstructors();
-    }
-
-    @PostMapping("/register")
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+        userService.deleteUserById(id);
+        return new ResponseEntity<>("User deleted", HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/token")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
         if (authentication.isAuthenticated()) {
-            User user = userService.getUserByUsername(authRequest.getUsername());
-            System.out.println(Long.toString(user.getId()));
-            return jwtService.generateToken(authRequest.getUsername(),
+            Optional<User> userOpt = userService.findUserByUsername(authRequest.getUsername());
+            User user = userOpt.get();
+            // System.out.println(Long.toString(user.getId()));
+
+            String token = jwtService.generateToken(authRequest.getUsername(),
                     userService.getUserRoles(authRequest.getUsername()), Long.toString(user.getId()));
+            return new ResponseEntity<>(token, HttpStatus.OK);
         } else {
-            throw new UsernameNotFoundException("invalid user request !");
+            return new ResponseEntity<>("Could not create Token", HttpStatus.BAD_REQUEST);
         }
     }
+
 }
